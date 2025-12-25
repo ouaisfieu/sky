@@ -924,4 +924,634 @@
             theme: 'default',
             themeVariables: {
                 primaryColor: '#b19cd9',
-                primaryTextColor: '#2d1
+                primaryTextColor: '#2d1b3d',
+                primaryBorderColor: '#b19cd9',
+                lineColor: '#8b5cf6',
+                secondaryColor: '#c9b3ff',
+                tertiaryColor: '#f5f3f7'
+            }
+        });
+
+        marked.setOptions({
+            highlight: function(code, lang) {
+                if (lang && hljs.getLanguage(lang)) {
+                    try {
+                        return hljs.highlight(code, { language: lang }).value;
+                    } catch (err) {}
+                }
+                return hljs.highlightAuto(code).value;
+            },
+            breaks: true,
+            gfm: true,
+            mangle: false,
+            headerIds: true
+        });
+
+        const editor = document.getElementById('editor');
+        const preview = document.getElementById('preview');
+        const fileInput = document.getElementById('fileInput');
+        const uploadZone = document.getElementById('uploadZone');
+        const fileList = document.getElementById('fileList');
+        const filenameInput = document.getElementById('filenameInput');
+        const mainContent = document.getElementById('mainContent');
+
+        // Drag & Drop
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadZone.addEventListener(eventName, () => {
+                uploadZone.classList.add('drag-over');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadZone.addEventListener(eventName, () => {
+                uploadZone.classList.remove('drag-over');
+            });
+        });
+
+        uploadZone.addEventListener('drop', (e) => {
+            const droppedFiles = Array.from(e.dataTransfer.files);
+            handleFiles(droppedFiles);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const selectedFiles = Array.from(e.target.files);
+            handleFiles(selectedFiles);
+            fileInput.value = '';
+        });
+
+        function handleFiles(fileArray) {
+            fileArray.forEach(file => {
+                if (file.name.endsWith('.md') || file.name.endsWith('.markdown')) {
+                    loadFile(file);
+                } else {
+                    showToast(`❌ "${file.name}" n'est pas un fichier Markdown`);
+                }
+            });
+        }
+
+        function loadFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const fileData = {
+                    name: file.name,
+                    content: e.target.result,
+                    wordCount: e.target.result.split(/\s+/).length,
+                    lines: e.target.result.split('\n').length,
+                    date: new Date()
+                };
+                
+                const existingIndex = files.findIndex(f => f.name === file.name);
+                if (existingIndex !== -1) {
+                    files[existingIndex] = fileData;
+                    showToast(`📝 "${file.name}" mis à jour`);
+                } else {
+                    files.push(fileData);
+                    showToast(`✅ "${file.name}" chargé`);
+                }
+                
+                updateFileList();
+                openFile(existingIndex !== -1 ? existingIndex : files.length - 1);
+            };
+            reader.readAsText(file);
+        }
+
+        function updateFileList() {
+            if (files.length === 0) {
+                fileList.innerHTML = '<div style="padding: 2rem 1rem; text-align: center; color: var(--lilac-dim); font-size: 0.9rem;">Aucun fichier chargé</div>';
+                return;
+            }
+
+            fileList.innerHTML = files.map((file, index) => `
+                <div class="file-item ${currentFile && currentFile.name === file.name ? 'active' : ''}" onclick="openFile(${index})">
+                    <span class="file-icon">📄</span>
+                    <div class="file-info">
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-meta">${file.wordCount} mots • ${file.lines} lignes</div>
+                    </div>
+                    <div class="file-actions">
+                        <button class="file-action-btn" onclick="openFileInModal(event, ${index})" title="Lire">👁️</button>
+                        <button class="file-action-btn" onclick="deleteFile(event, ${index})" title="Supprimer">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openFile(index) {
+            currentFile = files[index];
+            editor.value = currentFile.content;
+            filenameInput.value = currentFile.name;
+            updatePreview();
+            updateStats();
+            updateFileList();
+        }
+
+        function openFileInModal(event, index) {
+            event.stopPropagation();
+            modalFile = files[index];
+            
+            document.getElementById('modalTitle').textContent = modalFile.name;
+            
+            let html = marked.parse(modalFile.content);
+            html = html.replace(/<pre><code class="language-mermaid">([\s\S]*?)<\/code><\/pre>/g, 
+                '<div class="mermaid">$1</div>');
+            
+            document.getElementById('modalPreview').innerHTML = html;
+            document.getElementById('readModal').classList.add('active');
+            
+            setTimeout(() => {
+                mermaid.run({
+                    querySelector: '#modalPreview .mermaid'
+                });
+                enhanceCodeBlocks('#modalPreview');
+            }, 100);
+        }
+
+        function closeReadModal() {
+            document.getElementById('readModal').classList.remove('active');
+            modalFile = null;
+        }
+
+        function editModalFile() {
+            if (!modalFile) return;
+            currentFile = modalFile;
+            editor.value = modalFile.content;
+            filenameInput.value = modalFile.name;
+            updatePreview();
+            updateStats();
+            updateFileList();
+            closeReadModal();
+            showToast('✏️ Édition en cours');
+        }
+
+        function shareModalFile() {
+            if (!modalFile) return;
+            currentFile = modalFile;
+            closeReadModal();
+            openShareMenu();
+        }
+
+        function exportModalFile() {
+            if (!modalFile) return;
+            
+            const blob = new Blob([modalFile.content], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = modalFile.name;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showToast(`💾 "${modalFile.name}" exporté`);
+        }
+
+        function deleteFile(event, index) {
+            event.stopPropagation();
+            const fileName = files[index].name;
+            
+            if (confirm(`Supprimer "${fileName}" ?`)) {
+                files.splice(index, 1);
+                
+                if (currentFile && currentFile.name === fileName) {
+                    if (files.length > 0) {
+                        openFile(Math.min(index, files.length - 1));
+                    } else {
+                        currentFile = null;
+                        editor.value = '';
+                        filenameInput.value = '';
+                        updatePreview();
+                        updateStats();
+                    }
+                }
+                
+                updateFileList();
+                showToast(`🗑️ "${fileName}" supprimé`);
+            }
+        }
+
+        function newFile() {
+            const fileName = `nouveau-${Date.now()}.md`;
+            const newFileData = {
+                name: fileName,
+                content: '# Nouveau document\n\nCommencez à écrire ici...',
+                wordCount: 5,
+                lines: 3,
+                date: new Date()
+            };
+            
+            files.push(newFileData);
+            currentFile = newFileData;
+            
+            editor.value = newFileData.content;
+            filenameInput.value = newFileData.name;
+            updatePreview();
+            updateStats();
+            updateFileList();
+            
+            showToast('📄 Nouveau fichier créé');
+            editor.focus();
+        }
+
+        function saveFile() {
+            if (!currentFile) {
+                showToast('❌ Aucun fichier à sauvegarder');
+                return;
+            }
+            
+            currentFile.content = editor.value;
+            currentFile.name = filenameInput.value || currentFile.name;
+            currentFile.wordCount = editor.value.split(/\s+/).length;
+            currentFile.lines = editor.value.split('\n').length;
+            
+            const blob = new Blob([currentFile.content], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = currentFile.name;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            updateFileList();
+            showToast(`💾 "${currentFile.name}" sauvegardé`);
+        }
+
+        function exportMd() {
+            const content = editor.value;
+            const filename = filenameInput.value || currentFile?.name || 'document.md';
+            
+            if (!content.trim()) {
+                showToast('❌ Aucun contenu à exporter');
+                return;
+            }
+            
+            const blob = new Blob([content], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showToast(`📥 "${filename}" exporté`);
+        }
+
+        function exportHtml() {
+            const content = editor.value;
+            const filename = (filenameInput.value || currentFile?.name || 'document.md').replace('.md', '.html');
+            
+            if (!content.trim()) {
+                showToast('❌ Aucun contenu à exporter');
+                return;
+            }
+            
+            const html = `<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${filename.replace('.html', '')}</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            max-width: 800px; 
+            margin: 2rem auto; 
+            padding: 0 2rem; 
+            line-height: 1.6;
+            color: #2d1b3d;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: #9575cd;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #b19cd9;
+            padding-bottom: 0.5rem;
+        }
+        code { 
+            background: #f4f4f4; 
+            padding: 0.2rem 0.4rem; 
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #8b5cf6;
+            border: 1px solid #b19cd9;
+        }
+        pre { 
+            background: #1a1b26; 
+            color: #00ff41;
+            padding: 1rem; 
+            border-radius: 8px; 
+            overflow-x: auto;
+            border: 2px solid #00ff41;
+        }
+        pre code {
+            background: none;
+            border: none;
+            color: #00ff41;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1.5rem 0;
+            border: 2px solid #b19cd9;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th {
+            background: #b19cd9;
+            color: white;
+            padding: 0.8rem;
+            text-align: left;
+        }
+        td {
+            border-bottom: 1px solid #b19cd9;
+            padding: 0.6rem 0.8rem;
+        }
+        tr:hover {
+            background: rgba(177, 156, 217, 0.1);
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+        blockquote {
+            border-left: 4px solid #b19cd9;
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            background: rgba(177, 156, 217, 0.05);
+            border-radius: 0 8px 8px 0;
+        }
+        a {
+            color: #8b5cf6;
+            text-decoration: none;
+            border-bottom: 1px solid #8b5cf6;
+        }
+        a:hover {
+            color: #c9b3ff;
+            border-bottom-color: #c9b3ff;
+        }
+        ul, ol {
+            margin: 1rem 0 1rem 2rem;
+        }
+        li {
+            margin: 0.5rem 0;
+        }
+    </style>
+</head>
+<body>
+${preview.innerHTML}
+</body>
+</html>`;
+            
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showToast(`🌐 "${filename}" exporté`);
+        }
+
+        function setView(view) {
+            currentView = view;
+            
+            document.getElementById('viewSplit').classList.remove('active');
+            document.getElementById('viewEditor').classList.remove('active');
+            document.getElementById('viewPreview').classList.remove('active');
+            
+            mainContent.classList.remove('editor-only', 'preview-only');
+            
+            if (view === 'split') {
+                document.getElementById('viewSplit').classList.add('active');
+            } else if (view === 'editor') {
+                document.getElementById('viewEditor').classList.add('active');
+                mainContent.classList.add('editor-only');
+                document.getElementById('previewPanel').style.display = 'none';
+            } else if (view === 'preview') {
+                document.getElementById('viewPreview').classList.add('active');
+                mainContent.classList.add('preview-only');
+                document.getElementById('editorPanel').style.display = 'none';
+            }
+            
+            if (view !== 'preview') {
+                document.getElementById('editorPanel').style.display = 'flex';
+            }
+            if (view !== 'editor') {
+                document.getElementById('previewPanel').style.display = 'flex';
+            }
+        }
+
+        function shareCurrentFile() {
+            if (!currentFile && editor.value.trim() === '') {
+                showToast('❌ Aucun contenu à partager');
+                return;
+            }
+            openShareMenu();
+        }
+
+        function openShareMenu() {
+            document.getElementById('shareOverlay').classList.add('active');
+            document.getElementById('shareMenu').classList.add('active');
+        }
+
+        function closeShareMenu() {
+            document.getElementById('shareOverlay').classList.remove('active');
+            document.getElementById('shareMenu').classList.remove('active');
+        }
+
+        function shareOn(platform) {
+            const file = currentFile || { name: 'document.md', content: editor.value };
+            const text = file.content.substring(0, 500);
+            const title = file.name.replace('.md', '');
+            
+            const urls = {
+                twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(title + '\n\n' + text)}`,
+                facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`,
+                linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`,
+                whatsapp: `https://wa.me/?text=${encodeURIComponent(title + '\n\n' + text)}`,
+                telegram: `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(title)}`,
+                reddit: `https://reddit.com/submit?url=${encodeURIComponent(window.location.href)}&title=${encodeURIComponent(title)}`,
+                email: `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(text)}`
+            };
+            
+            if (platform === 'copy') {
+                navigator.clipboard.writeText(file.content).then(() => {
+                    showToast('📋 Contenu copié dans le presse-papier !');
+                    closeShareMenu();
+                });
+            } else if (urls[platform]) {
+                window.open(urls[platform], '_blank');
+                closeShareMenu();
+                showToast(`📤 Partagé sur ${platform} !`);
+            }
+        }
+
+        // Éditeur
+        editor.addEventListener('input', () => {
+            if (currentFile) {
+                currentFile.content = editor.value;
+            }
+            updatePreview();
+            updateStats();
+        });
+
+        function updatePreview() {
+            let html = marked.parse(editor.value);
+            html = html.replace(/<pre><code class="language-mermaid">([\s\S]*?)<\/code><\/pre>/g, 
+                '<div class="mermaid">$1</div>');
+            preview.innerHTML = html;
+            
+            setTimeout(() => {
+                mermaid.run({
+                    querySelector: '#preview .mermaid'
+                });
+                enhanceCodeBlocks('#preview');
+            }, 100);
+        }
+
+        function enhanceCodeBlocks(selector) {
+            document.querySelectorAll(`${selector} pre`).forEach(pre => {
+                if (!pre.querySelector('.code-copy-btn')) {
+                    const code = pre.querySelector('code');
+                    if (code) {
+                        const copyBtn = document.createElement('button');
+                        copyBtn.className = 'code-copy-btn';
+                        copyBtn.textContent = '📋 Copier';
+                        copyBtn.onclick = () => {
+                            navigator.clipboard.writeText(code.textContent).then(() => {
+                                copyBtn.textContent = '✓ Copié !';
+                                setTimeout(() => {
+                                    copyBtn.textContent = '📋 Copier';
+                                }, 2000);
+                            });
+                        };
+                        pre.style.position = 'relative';
+                        pre.appendChild(copyBtn);
+                    }
+                }
+            });
+        }
+
+        function updateStats() {
+            const text = editor.value;
+            document.getElementById('charCount').textContent = text.length;
+            document.getElementById('wordCount').textContent = text.trim() ? text.trim().split(/\s+/).length : 0;
+            document.getElementById('lineCount').textContent = text.split('\n').length;
+        }
+
+        function insertText(before, after = '') {
+            const start = editor.selectionStart;
+            const end = editor.selectionEnd;
+            const text = editor.value;
+            const selectedText = text.substring(start, end);
+            
+            const newText = text.substring(0, start) + before + selectedText + after + text.substring(end);
+            editor.value = newText;
+            
+            const newCursorPos = start + before.length + selectedText.length;
+            editor.setSelectionRange(newCursorPos, newCursorPos);
+            editor.focus();
+            
+            updatePreview();
+            updateStats();
+            
+            if (currentFile) {
+                currentFile.content = editor.value;
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('active');
+            
+            setTimeout(() => {
+                toast.classList.remove('active');
+            }, 3000);
+        }
+
+        function showAbout() {
+            alert('📝 Markdown Workstation Desktop v2.0\n\n' +
+                  'Raccourcis clavier :\n' +
+                  '• Ctrl+N : Nouveau fichier\n' +
+                  '• Ctrl+S : Sauvegarder\n' +
+                  '• Ctrl+E : Exporter MD\n' +
+                  '• Ctrl+B : Gras\n' +
+                  '• Ctrl+I : Italique\n' +
+                  '• Ctrl+K : Lien\n' +
+                  '• Ctrl+1/2/3 : Changer de vue\n\n' +
+                  'Fonctionnalités :\n' +
+                  '• Éditeur en temps réel\n' +
+                  '• Modal de lecture\n' +
+                  '• Partage réseaux sociaux\n' +
+                  '• Export MD et HTML\n' +
+                  '• Support Mermaid\n' +
+                  '• Coloration syntaxique');
+        }
+
+        // Raccourcis clavier
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                saveFile();
+            }
+            
+            if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+                e.preventDefault();
+                newFile();
+            }
+            
+            if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
+                e.preventDefault();
+                exportMd();
+            }
+            
+            if ((e.ctrlKey || e.metaKey) && e.key === '1') {
+                e.preventDefault();
+                setView('split');
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key === '2') {
+                e.preventDefault();
+                setView('editor');
+            }
+            if ((e.ctrlKey || e.metaKey) && e.key === '3') {
+                e.preventDefault();
+                setView('preview');
+            }
+            
+            if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+                e.preventDefault();
+                insertText('**', '**');
+            }
+            
+            if ((e.ctrlKey || e.metaKey) && e.key === 'i') {
+                e.preventDefault();
+                insertText('*', '*');
+            }
+            
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                insertText('[', '](url)');
+            }
+
+            if (e.key === 'Escape') {
+                closeReadModal();
+                closeShareMenu();
+            }
+        });
+
+        // Initialisation
+        updateFileList();
+        updatePreview();
+        updateStats();
+    </script>
+</body>
+</html>
