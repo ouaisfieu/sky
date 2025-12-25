@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>document</title>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            max-width: 800px; 
+            margin: 2rem auto; 
+            padding: 0 2rem; 
+            line-height: 1.6;
+            color: #2d1b3d;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            color: #9575cd;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #b19cd9;
+            padding-bottom: 0.5rem;
+        }
+        code { 
+            background: #f4f4f4; 
+            padding: 0.2rem 0.4rem; 
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #8b5cf6;
+            border: 1px solid #b19cd9;
+        }
+        pre { 
+            background: #1a1b26; 
+            color: #00ff41;
+            padding: 1rem; 
+            border-radius: 8px; 
+            overflow-x: auto;
+            border: 2px solid #00ff41;
+        }
+        pre code {
+            background: none;
+            border: none;
+            color: #00ff41;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 1.5rem 0;
+            border: 2px solid #b19cd9;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th {
+            background: #b19cd9;
+            color: white;
+            padding: 0.8rem;
+            text-align: left;
+        }
+        td {
+            border-bottom: 1px solid #b19cd9;
+            padding: 0.6rem 0.8rem;
+        }
+        tr:hover {
+            background: rgba(177, 156, 217, 0.1);
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 2px solid #b19cd9;
+            margin: 1.5rem 0;
+        }
+        blockquote {
+            border-left: 4px solid #b19cd9;
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            color: #9575cd;
+            font-style: italic;
+            background: rgba(177, 156, 217, 0.05);
+            padding: 1rem 1.5rem;
+            border-radius: 0 8px 8px 0;
+        }
+        a {
+            color: #8b5cf6;
+            text-decoration: none;
+            border-bottom: 1px solid #8b5cf6;
+        }
+        a:hover {
+            color: #c9b3ff;
+            border-bottom-color: #c9b3ff;
+        }
+        ul, ol {
+            margin: 1rem 0 1rem 2rem;
+        }
+        li {
+            margin: 0.5rem 0;
+        }
+    </style>
+</head>
+<body>
+<h1>📝 Markdown Workstation</h1>
+<blockquote>
+<p>Un éditeur Markdown complet, puissant et élégant directement dans <a href="https://ouaisfieu.github.io/sam/eatme.html">votre navigateur</a></p>
+</blockquote>
+<p><img src="https://img.shields.io/badge/version-2.0-purple" alt="Version"><br><img src="https://img.shields.io/badge/license-MIT-green" alt="License"><br><img src="https://img.shields.io/badge/made%20with-%E2%9D%A4%EF%B8%8F-red" alt="Made with"></p>
+<hr>
+<h2>✨ Caractéristiques principales</h2>
+<h3>🎨 Interface moderne</h3>
+<ul>
+<li>Design <strong>rétro-futuriste</strong> avec thème lilas et vert terminal</li>
+<li>Animations fluides et effets néon</li>
+<li>Interface responsive (desktop, tablette, mobile)</li>
+<li>Effets de scanline et glitch pour l'ambiance cyberpunk</li>
+</ul>
+<h3>✏️ Éditeur puissant</h3>
+<ul>
+<li><strong>Éditeur en temps réel</strong> avec aperçu instantané</li>
+<li><strong>Coloration syntaxique</strong> pour les blocs de code (140+ langages)</li>
+<li><strong>Barre d'outils</strong> intuitive avec raccourcis</li>
+<li><strong>Statistiques en direct</strong> : caractères, mots, lignes</li>
+</ul>
+<h3>📁 Gestion multi-fichiers</h3>
+<ul>
+<li>Travaillez sur <strong>plusieurs fichiers</strong> simultanément</li>
+<li><strong>Drag &amp; Drop</strong> pour charger vos fichiers</li>
+<li><strong>Indicateur de modifications</strong> (● = fichier modifié)</li>
+<li><strong>Changement de nom</strong> à la volée</li>
+<li><strong>Suppression</strong> individuelle des fichiers</li>
+</ul>
+<h3>💾 Export flexible</h3>
+<ul>
+<li><strong>Export .md</strong> : Téléchargez vos fichiers Markdown</li>
+<li><strong>Export HTML</strong> : Version standalone avec styles intégrés</li>
+<li><strong>Sauvegarde en mémoire</strong> : Switchez entre fichiers sans perdre vos modifications</li>
+<li><strong>Auto-save</strong> toutes les 30 secondes</li>
+</ul>
+<h3>👁️ Modes d'affichage</h3>
+<ul>
+<li><strong>Split</strong> : Éditeur + Aperçu côte à côte (par défaut)</li>
+<li><strong>Edit</strong> : Éditeur seul en plein écran</li>
+<li><strong>Preview</strong> : Aperçu seul pour vérifier le rendu</li>
+</ul>
+<h3>🎯 Support Markdown complet</h3>
+<ul>
+<li>✅ Titres (H1 à H6)</li>
+<li>✅ Emphases (gras, italique, barré)</li>
+<li>✅ Listes (ordonnées, non ordonnées, tâches)</li>
+<li>✅ Liens et images</li>
+<li>✅ Blocs de code avec coloration</li>
+<li>✅ Citations</li>
+<li>✅ Tableaux</li>
+<li>✅ HTML inline</li>
+<li>✅ Diagrammes Mermaid</li>
+<li>✅ Formules mathématiques (LaTeX)</li>
+</ul>
+<hr>
+<h2>🚀 Démarrage rapide</h2>
+<h3>Installation</h3>
+<p>Aucune installation requise ! Il suffit d'ouvrir le fichier HTML dans votre navigateur.</p>
+<pre><code class="language-bash"># Clonez le projet
+git clone https://github.com/votre-repo/markdown-workstation.git
+
+# Ouvrez le fichier
+# Option 1 : Double-clic sur workstation.html
+# Option 2 : Serveur local
+python -m http.server 8000
+# Puis ouvrez http://localhost:8000/workstation.html
+</code></pre>
+<h3>Première utilisation</h3>
+<ol>
+<li><strong>Créer un nouveau fichier</strong> : Cliquez sur "📄 Nouveau"</li>
+<li><strong>Charger un fichier</strong> : Glissez-déposez ou cliquez sur "⬆ Charger .md"</li>
+<li><strong>Commencer à écrire</strong> : L'aperçu se met à jour en temps réel</li>
+<li><strong>Exporter</strong> : Cliquez sur "📥 Export MD" ou "🌐 Export HTML"</li>
+</ol>
+<hr>
+<h2>⌨️ Raccourcis clavier</h2>
+<h3>Fichiers</h3>
+<table>
+<thead>
+<tr>
+<th>Raccourci</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Ctrl+S</code> / <code>Cmd+S</code></td>
+<td>Sauvegarder le fichier actuel</td>
+</tr>
+<tr>
+<td><code>Ctrl+N</code> / <code>Cmd+N</code></td>
+<td>Créer un nouveau fichier</td>
+</tr>
+<tr>
+<td><code>Ctrl+E</code> / <code>Cmd+E</code></td>
+<td>Exporter en .md</td>
+</tr>
+</tbody></table>
+<h3>Mise en forme</h3>
+<table>
+<thead>
+<tr>
+<th>Raccourci</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Ctrl+B</code> / <code>Cmd+B</code></td>
+<td><strong>Gras</strong></td>
+</tr>
+<tr>
+<td><code>Ctrl+I</code> / <code>Cmd+I</code></td>
+<td><em>Italique</em></td>
+</tr>
+<tr>
+<td><code>Ctrl+K</code> / <code>Cmd+K</code></td>
+<td><a href="">Lien</a></td>
+</tr>
+</tbody></table>
+<h3>Affichage</h3>
+<table>
+<thead>
+<tr>
+<th>Raccourci</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Ctrl+1</code> / <code>Cmd+1</code></td>
+<td>Mode Split (éditeur + aperçu)</td>
+</tr>
+<tr>
+<td><code>Ctrl+2</code> / <code>Cmd+2</code></td>
+<td>Mode éditeur seul</td>
+</tr>
+<tr>
+<td><code>Ctrl+3</code> / <code>Cmd+3</code></td>
+<td>Mode aperçu seul</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>🎨 Barre d'outils</h2>
+<p>La barre d'outils en haut de l'éditeur offre un accès rapide aux fonctionnalités :</p>
+<h3>Boutons de formatage rapide</h3>
+<ul>
+<li><strong>H</strong> : Insérer un titre <code># </code></li>
+<li><strong>B</strong> : Mettre en <strong>gras</strong> <code>**texte**</code></li>
+<li><strong>I</strong> : Mettre en <em>italique</em> <code>*texte*</code></li>
+<li><strong>{ }</strong> : Insérer du <code>code</code> inline</li>
+<li><strong>🔗</strong> : Créer un <a href="url">lien</a></li>
+<li><strong>•</strong> : Créer une liste <code>- </code></li>
+</ul>
+<hr>
+<h2>📊 Fonctionnalités avancées</h2>
+<h3>Auto-save</h3>
+<p>Le workstation sauvegarde automatiquement vos modifications toutes les 30 secondes. Un indicateur (●) apparaît à côté des fichiers modifiés.</p>
+<h3>Avertissement avant fermeture</h3>
+<p>Si vous avez des modifications non sauvegardées, le navigateur vous demandera confirmation avant de fermer l'onglet.</p>
+<h3>Support des diagrammes Mermaid</h3>
+<p>Créez des diagrammes directement dans votre Markdown :</p>
+<pre><code class="language-markdown">```mermaid
+graph TD
+    A[Début] --&gt; B{Condition?}
+    B --&gt;|Oui| C[Action 1]
+    B --&gt;|Non| D[Action 2]
+    C --&gt; E[Fin]
+    D --&gt; E
+```
+</code></pre>
+<h3>Export HTML standalone</h3>
+<p>L'export HTML génère un fichier autonome avec :</p>
+<ul>
+<li>Tous les styles intégrés</li>
+<li>Design cohérent avec le workstation</li>
+<li>Responsive et prêt à partager</li>
+<li>Aucune dépendance externe</li>
+</ul>
+<hr>
+<h2>🔧 Technologies utilisées</h2>
+<ul>
+<li><strong><a href="https://marked.js.org/">Marked.js</a></strong> - Parser Markdown (v11.1.1)</li>
+<li><strong><a href="https://highlightjs.org/">Highlight.js</a></strong> - Coloration syntaxique (v11.9.0)</li>
+<li><strong><a href="https://mermaid.js.org/">Mermaid</a></strong> - Diagrammes (v10)</li>
+<li><strong>Pure CSS</strong> - Design custom sans framework</li>
+<li><strong>Vanilla JavaScript</strong> - Pas de dépendances lourdes</li>
+</ul>
+<hr>
+<h2>💡 Cas d'usage</h2>
+<h3>Pour les développeurs</h3>
+<ul>
+<li>Documentation de projets</li>
+<li>README et wikis</li>
+<li>Notes techniques</li>
+<li>Tutoriels et guides</li>
+</ul>
+<h3>Pour les écrivains</h3>
+<ul>
+<li>Brouillons d'articles</li>
+<li>Documentation</li>
+<li>Prise de notes structurées</li>
+<li>Export vers blog/CMS</li>
+</ul>
+<h3>Pour les étudiants</h3>
+<ul>
+<li>Prise de notes de cours</li>
+<li>Rédaction de rapports</li>
+<li>Documentation de projets</li>
+<li>Révisions structurées</li>
+</ul>
+<h3>Pour les équipes</h3>
+<ul>
+<li>Documentation collaborative (avec export)</li>
+<li>Spécifications techniques</li>
+<li>Procédures et guides</li>
+<li>Partage de connaissances</li>
+</ul>
+<hr>
+<h2>🎯 Fonctionnalités futures</h2>
+<ul>
+<li><input disabled="" type="checkbox"> Mode sombre / clair</li>
+<li><input disabled="" type="checkbox"> Recherche et remplacement dans l'éditeur</li>
+<li><input disabled="" type="checkbox"> Support de templates prédéfinis</li>
+<li><input disabled="" type="checkbox"> Export PDF</li>
+<li><input disabled="" type="checkbox"> Synchronisation cloud (optionnelle)</li>
+<li><input disabled="" type="checkbox"> Collaboration en temps réel</li>
+<li><input disabled="" type="checkbox"> Plugins et extensions</li>
+<li><input disabled="" type="checkbox"> Gestion de projets/dossiers</li>
+<li><input disabled="" type="checkbox"> Historique des versions</li>
+<li><input disabled="" type="checkbox"> Snippets personnalisés</li>
+</ul>
+<hr>
+<h2>🤝 Contribution</h2>
+<p>Les contributions sont les bienvenues ! N'hésitez pas à :</p>
+<ol>
+<li>Fork le projet</li>
+<li>Créer une branche (<code>git checkout -b feature/amelioration</code>)</li>
+<li>Commit vos changements (<code>git commit -m 'Ajout d'une fonctionnalité'</code>)</li>
+<li>Push vers la branche (<code>git push origin feature/amelioration</code>)</li>
+<li>Ouvrir une Pull Request</li>
+</ol>
+<h3>Guidelines</h3>
+<ul>
+<li>Respecter le style de code existant</li>
+<li>Tester vos modifications sur différents navigateurs</li>
+<li>Documenter les nouvelles fonctionnalités</li>
+<li>Garder l'esprit minimaliste et performant</li>
+</ul>
+<hr>
+<h2>📝 License</h2>
+<p>Ce projet est sous licence MIT. Voir le fichier <a href="LICENSE">LICENSE</a> pour plus de détails.</p>
+<hr>
+<h2>🙏 Remerciements</h2>
+<ul>
+<li><strong>Marked.js</strong> pour le parsing Markdown</li>
+<li><strong>Highlight.js</strong> pour la coloration syntaxique</li>
+<li><strong>Mermaid</strong> pour les diagrammes</li>
+<li>La communauté Markdown pour les standards</li>
+</ul>
+<hr>
+<h2>📞 Support</h2>
+<p>Si vous rencontrez des problèmes ou avez des questions :</p>
+<ul>
+<li>🐛 <a href="https://github.com/votre-repo/markdown-workstation/issues">Ouvrir une issue</a></li>
+<li>💬 <a href="https://github.com/votre-repo/markdown-workstation/discussions">Discussions</a></li>
+<li>📧 Email : <a href="mailto:votre-email@example.com">votre-email@example.com</a></li>
+</ul>
+<hr>
+<h2>🌟 Donnez une étoile !</h2>
+<p>Si ce projet vous a été utile, n'hésitez pas à lui donner une étoile ⭐ sur GitHub !</p>
+<hr>
+<div align="center">
+
+<p><strong>Fait avec ❤️ par [Votre Nom]</strong></p>
+<p><a href="https://votre-site.com">🌐 Site Web</a> • <a href="https://twitter.com/votre-compte">🐦 Twitter</a> • <a href="https://linkedin.com/in/votre-profil">💼 LinkedIn</a></p>
+</div>
+
+<hr>
+<h2>📸 Screenshots</h2>
+<h3>Interface principale - Mode Split</h3>
+<p><img src="screenshots/split-mode.png" alt="Split Mode"></p>
+<h3>Mode Éditeur seul</h3>
+<p><img src="screenshots/editor-mode.png" alt="Editor Mode"></p>
+<h3>Mode Aperçu seul</h3>
+<p><img src="screenshots/preview-mode.png" alt="Preview Mode"></p>
+<h3>Gestion multi-fichiers</h3>
+<p><img src="screenshots/multi-files.png" alt="Multi-files"></p>
+<hr>
+<h2>🔍 FAQ</h2>
+<p><strong>Q : Mes fichiers sont-ils stockés quelque part ?</strong><br>R : Non, tout reste dans votre navigateur. Les fichiers ne sont jamais envoyés sur un serveur.</p>
+<p><strong>Q : Puis-je l'utiliser hors ligne ?</strong><br>R : Oui, une fois la page chargée, vous pouvez travailler hors ligne. Seuls les CDN nécessitent une connexion initiale.</p>
+<p><strong>Q : Le workstation fonctionne-t-il sur mobile ?</strong><br>R : Oui, l'interface est responsive et fonctionne sur tablettes et mobiles, bien que l'expérience soit optimale sur desktop.</p>
+<p><strong>Q : Comment sauvegarder définitivement mes fichiers ?</strong><br>R : Utilisez le bouton "📥 Export MD" pour télécharger vos fichiers sur votre ordinateur.</p>
+<p><strong>Q : Puis-je personnaliser les couleurs/thème ?</strong><br>R : Actuellement non, mais c'est prévu dans les prochaines versions !</p>
+<hr>
+<h2>🔄 Changelog</h2>
+<h3>Version 2.0 (Actuelle)</h3>
+<ul>
+<li>✨ Gestion multi-fichiers</li>
+<li>✨ Export HTML standalone</li>
+<li>✨ Auto-save toutes les 30 secondes</li>
+<li>✨ Barre d'outils avec raccourcis de formatage</li>
+<li>✨ 3 modes d'affichage (Split/Edit/Preview)</li>
+<li>✨ Support Mermaid pour diagrammes</li>
+<li>✨ Statistiques en temps réel</li>
+<li>✨ Drag &amp; Drop de fichiers</li>
+<li>🐛 Corrections diverses</li>
+</ul>
+<h3>Version 1.0</h3>
+<ul>
+<li>🎉 Release initiale</li>
+<li>✨ Éditeur Markdown basique</li>
+<li>✨ Aperçu en temps réel</li>
+<li>✨ Export .md</li>
+</ul>
+<hr>
+<p><strong>Version</strong> : 2.0<br><strong>Dernière mise à jour</strong> : Décembre 2024<br><strong>Statut</strong> : Stable ✅</p>
+<hr>
+<h2>Contact</h2>
+<p><a href="https://dl.ouaisfi.eu/usba/1/2/3/9/9/9/index.html">Demain</a></p>
+
+</body>
+</html>

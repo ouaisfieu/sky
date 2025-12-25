@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cet univers vous appartient</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description"
+        content="Votre univers n’attend plus que vous. Rien n’est figé. Ce que vous voyez peut être modifié." />
+
+  <!-- Indexation -->
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://dl.ouaisfi.eu/usba/1/2/3/9/9/9/index.html" />
+
+  <!-- Open Graph / Bluesky / Mastodon -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Votre univers n’attend plus que vous" />
+  <meta property="og:description"
+        content="Il vous appartient de le modifier. Ce que vous voyez n’est qu’un état transitoire." />
+  <meta property="og:url" content="https://dl.ouaisfi.eu/usba/1/2/3/9/9/9/index.html" />
+  <meta property="og:image" content="https://ouaisfieu.github.io/sam/og.png" />
+  <meta property="og:locale" content="fr_FR" />
+
+  <!-- Twitter Card (X, recyclé ailleurs) -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Votre univers vous appartient" />
+  <meta name="twitter:description"
+        content="Rien n’est figé. Il vous appartient de le modifier." />
+  <meta name="twitter:image" content="https://ouaisfieu.github.io/sam/og.png" />
+
+  <!-- Micro-données -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    "name": "Votre univers n’attend plus que vous",
+    "description": "Une page minimale invitant à reprendre la main sur son environnement.",
+    "inLanguage": "fr",
+    "author": {
+      "@type": "Person",
+      "name": "Anonyme"
+    }
+  }
+  </script>
+
+  <style>
+    :root {
+      --bg: #0b0d10;
+      --fg: #e6e6e6;
+      --muted: #7a7f87;
+      --accent: #9cffc9;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont,
+                   "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+                   "Helvetica Neue", Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    main {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 900px;
+      line-height: 1.4;
+    }
+
+    h1 {
+      font-size: clamp(1.6rem, 4vw, 3rem);
+      font-weight: 500;
+      margin: 0;
+    }
+
+    h1 span {
+      color: var(--accent);
+    }
+
+    p {
+      margin-top: 1.5rem;
+      font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+      color: var(--muted);
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 0.6ch;
+      animation: blink 1.2s infinite;
+    }
+
+    @keyframes blink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at var(--x, 50%) var(--y, 50%),
+        rgba(156,255,201,0.06),
+        transparent 40%);
+      pointer-events: none;
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <div class="container">
+      <h1>
+        votre <a href="https://ouaisfieu.github.io/sam/boudin-blanc.html" target="_blank" >univers</a> n’attend plus que vous,<br />
+        <span>il vous appartient (de le modifier)</span><span class="cursor">_</span>
+      </h1>
+      <p>
+        rien n’est figé
+      </p>
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener("mousemove", (e) => {
+      const x = (e.clientX / innerWidth) * 100;
+      const y = (e.clientY / innerHeight) * 100;
+      document.body.style.setProperty("--x", x + "%");
+      document.body.style.setProperty("--y", y + "%");
+    });
+  </script>
+</body>
+</html>
