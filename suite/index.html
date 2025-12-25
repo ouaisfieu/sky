@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QUI-EST-CE ? — système impossible</title>
+
+<style>
+:root {
+  --bg:#05060a;
+  --neon:#7df9ff;
+  --danger:#ff4d4d;
+  --ok:#9dff9d;
+  --text:#e6e6e6;
+  --glass:rgba(255,255,255,0.08);
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:radial-gradient(circle at top,#0b0f2b,var(--bg));
+  color:var(--text);
+  font-family:system-ui,sans-serif;
+}
+
+canvas{
+  position:fixed;
+  inset:0;
+  z-index:-1;
+}
+
+header{
+  padding:1.5rem;
+  text-align:center;
+}
+
+h1{
+  font-size:clamp(2rem,4vw,3rem);
+  color:var(--neon);
+  text-shadow:0 0 20px var(--neon);
+}
+
+.subtitle{
+  opacity:.7;
+  font-size:.95rem;
+}
+
+main{
+  max-width:1200px;
+  margin:auto;
+  padding:1rem;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:1rem;
+}
+
+.card{
+  background:linear-gradient(145deg,var(--glass),transparent);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:14px;
+  padding:1rem;
+  backdrop-filter:blur(8px);
+  box-shadow:0 0 25px rgba(0,0,0,.4);
+}
+
+.card h2{
+  margin-top:0;
+  font-size:1.1rem;
+  color:var(--neon);
+}
+
+.stat{
+  font-size:1.8rem;
+  font-weight:bold;
+}
+
+.label{
+  font-size:.8rem;
+  opacity:.6;
+}
+
+button{
+  width:100%;
+  padding:.9rem;
+  font-size:1rem;
+  background:transparent;
+  border:1px solid var(--neon);
+  color:var(--neon);
+  border-radius:10px;
+  cursor:pointer;
+  transition:.3s;
+}
+
+button:hover{
+  background:var(--neon);
+  color:#000;
+  box-shadow:0 0 25px var(--neon);
+}
+
+.silence-high{
+  color:var(--danger);
+  text-shadow:0 0 10px var(--danger);
+}
+
+.silence-low{
+  color:var(--ok);
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th,td{
+  padding:.4rem;
+  border-bottom:1px solid rgba(255,255,255,.1);
+  text-align:left;
+  font-size:.85rem;
+}
+
+iframe{
+  width:100%;
+  height:420px;
+  border:none;
+  border-radius:10px;
+}
+
+footer{
+  text-align:center;
+  opacity:.4;
+  font-size:.75rem;
+  padding:2rem 1rem;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="universe"></canvas>
+
+<header>
+  <h1>QUI-EST-CE&nbsp;?</h1>
+  <div class="subtitle">
+    Une personne. En Belgique.  
+    Connue par 9 individus.  
+    Protégée par 42.
+  </div>
+</header>
+
+<main>
+
+<section class="grid">
+
+  <div class="card">
+    <h2>🌍 Population mondiale</h2>
+    <div class="stat" id="worldPop">…</div>
+    <div class="label">Source : Banque mondiale</div>
+  </div>
+
+  <div class="card">
+    <h2>🌐 Utilisateurs Internet</h2>
+    <div class="stat" id="internetUsers">…</div>
+    <div class="label">Source : Banque mondiale</div>
+  </div>
+
+  <div class="card">
+    <h2>🇧🇪 Hypothèse Belgique</h2>
+    <div class="stat" id="belgiumChance">…</div>
+    <div class="label">probabilité brute</div>
+  </div>
+
+  <div class="card">
+    <h2>👁️ Connaissance réelle</h2>
+    <div class="stat">9</div>
+    <div class="label">détenteurs de l’identité</div>
+  </div>
+
+  <div class="card">
+    <h2>🜏 Organisation silencieuse</h2>
+    <div class="stat">42</div>
+    <div class="label">membres sous contrainte</div>
+    <div id="silenceLevel" class="label silence-low">
+      niveau de silence : stable
+    </div>
+  </div>
+
+</section>
+
+<div class="card">
+  <h2>📑 Extraction brute — World Bank</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Année</th>
+        <th>Population mondiale</th>
+      </tr>
+    </thead>
+    <tbody id="wbTable"></tbody>
+  </table>
+  <div class="label">API officielle — données ouvertes</div>
+</div>
+
+<div class="card">
+  <h2>📊 Données institutionnelles — Belgique</h2>
+  <iframe src="https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Belgium"></iframe>
+  <div class="label">Source : Eurostat (UE)</div>
+</div>
+
+<div class="card">
+  <h2>🌍 Indicateurs mondiaux</h2>
+  <iframe src="https://data.worldbank.org/indicator/SP.POP.TOTL"></iframe>
+  <div class="label">Source : World Bank Open Data</div>
+</div>
+
+<div class="card">
+  <h2>🧩 Tentative d’identification</h2>
+  <button id="guess">TENTER DE ME TROUVER</button>
+  <div id="verdict" class="label" style="margin-top:1rem;min-height:3em"></div>
+</div>
+
+</main>
+
+<footer>
+  Trop de données. Pas assez d’accès.
+</footer>
+
+<script>
+/* ====== FOND COSMIQUE ====== */
+const canvas=document.getElementById("universe");
+const ctx=canvas.getContext("2d");
+let stars=[];
+function resize(){canvas.width=innerWidth;canvas.height=innerHeight}
+addEventListener("resize",resize);resize();
+for(let i=0;i<220;i++){
+  stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.5+.3,v:Math.random()*.25+.05});
+}
+function animate(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle="#7df9ff";
+  stars.forEach(s=>{
+    s.y+=s.v;if(s.y>canvas.height)s.y=0;
+    ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();
+  });
+  requestAnimationFrame(animate);
+}
+animate();
+
+/* ====== STATS OFFICIELLES ====== */
+let worldPop=0,internetUsers=0;
+fetch("https://api.worldbank.org/v2/country/WLD/indicator/SP.POP.TOTL?format=json")
+.then(r=>r.json()).then(d=>{
+  worldPop=d[1][0].value;
+  document.getElementById("worldPop").textContent=worldPop.toLocaleString("fr-FR");
+  return fetch("https://api.worldbank.org/v2/indicator/IT.NET.USER.ZS?format=json");
+}).then(r=>r.json()).then(d=>{
+  internetUsers=Math.floor(worldPop*(d[1][0].value/100));
+  document.getElementById("internetUsers").textContent=internetUsers.toLocaleString("fr-FR");
+  const chance=(9/11700000)*100;
+  document.getElementById("belgiumChance").textContent=chance.toExponential(2)+" %";
+});
+
+/* ====== TABLEAU WB ====== */
+fetch("https://api.worldbank.org/v2/country/WLD/indicator/SP.POP.TOTL?format=json&per_page=5")
+.then(r=>r.json()).then(d=>{
+  d[1].forEach(row=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${row.date}</td><td>${row.value.toLocaleString("fr-FR")}</td>`;
+    document.getElementById("wbTable").appendChild(tr);
+  });
+});
+
+/* ====== LOGIQUE DU JEU ====== */
+let attempts=0,silence=0;
+const silenceStates=["stable","surveillé","contraint","verrouillé","total"];
+const verdicts=[
+  "Données valides. Conclusion impossible.",
+  "Cette tentative élargit l’espace des possibles.",
+  "Les sources confirment l’incertitude.",
+  "Les témoins ne parlent pas.",
+  "Le système se protège.",
+  "Hypothèse rejetée pour cause de surinformation."
+];
+
+document.getElementById("guess").onclick=()=>{
+  attempts++;silence=Math.min(silence+1,4);
+  const lvl=document.getElementById("silenceLevel");
+  lvl.textContent="niveau de silence : "+silenceStates[silence];
+  lvl.className="label "+(silence>=3?"silence-high":"silence-low");
+  document.getElementById("verdict").innerHTML=
+    `<strong>Tentative #${attempts}</strong><br>`+
+    verdicts[Math.floor(Math.random()*verdicts.length)];
+};
+</script>
+
+</body>
+</html>
