@@ -331,3 +331,57 @@ R : Actuellement non, mais c'est prévu dans les prochaines versions !
 ## Contact
 
 [Demain](https://dl.ouaisfi.eu/usba/1/2/3/9/9/9/index.html)
+
+
+## Suite
+
+Parfait ! Voilà ton **Markdown Workstation avec navigation dans le dossier** ! 🎯
+
+## 🎯 Fonctionnalités du système de dossier
+
+### 📁 Navigation automatique
+- **Chargement automatique** du dossier `./markdown/` au démarrage
+- **Liste des fichiers** configurables dans le tableau `markdownFiles`
+- **Icônes différentes** : 📄 pour fichiers du dossier, 📝 pour nouveaux fichiers
+
+### 🔄 Actualisation
+- **Bouton Refresh** (ou `Ctrl+R`) pour recharger le dossier
+- **Détection automatique** des fichiers disponibles
+- **Gestion des erreurs** si dossier vide
+
+### 💾 Sauvegarde intelligente
+- **Sauvegarder** : Télécharge automatiquement le fichier modifié
+- **Export MD/HTML** : Exporte vers votre ordinateur
+- **Indicateur de modifications** en mémoire
+
+### 🎨 Interface améliorée
+- **Chemin du dossier** affiché (`📁 ./markdown/`)
+- **État de chargement** pendant la recherche de fichiers
+- **Message d'erreur** si aucun fichier trouvé
+
+## 📝 Comment l'utiliser
+
+### Configuration initiale
+
+1. **Créer le dossier** `markdown` au même niveau que le fichier HTML
+2. **Ajouter vos fichiers** .md dans ce dossier
+3. **Modifier la liste** des fichiers à charger dans le code :
+
+```javascript
+const markdownFiles = [
+    'readme.md',
+    'guide.md',
+    'documentation.md',
+    // Ajoutez vos fichiers ici
+];
+```
+
+### Utilisation
+
+- **📄 Les fichiers du dossier** s'affichent automatiquement
+- **Cliquer sur un fichier** pour l'ouvrir dans l'éditeur
+- **Modifier le contenu** et voir l'aperçu en temps réel
+- **💾 Sauvegarder** pour télécharger la version modifiée
+- **🔄 Refresh** pour recharger les fichiers du dossier
+
+Le workstation peut maintenant **naviguer dans ton dossier markdown** et **charger tous tes fichiers** ! 🚀
