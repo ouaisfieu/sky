@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Document sous observation</title>
+
+<style>
+:root{
+  --bg:#05060a;
+  --ink:#e6e6e6;
+  --accent:#7df9ff;
+  --danger:#ff4d4d;
+  --glass:rgba(255,255,255,0.08);
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:system-ui, -apple-system, Segoe UI, sans-serif;
+  background:
+    radial-gradient(circle at top,#0b0f2b,var(--bg));
+  color:var(--ink);
+  line-height:1.6;
+}
+
+canvas{
+  position:fixed;
+  inset:0;
+  z-index:-1;
+}
+
+main{
+  max-width:900px;
+  margin:auto;
+  padding:2rem 1.2rem 4rem;
+}
+
+section{
+  margin-bottom:3rem;
+  padding:1.5rem;
+  background:linear-gradient(145deg,var(--glass),transparent);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:16px;
+  backdrop-filter:blur(8px);
+  box-shadow:0 0 30px rgba(0,0,0,.45);
+}
+
+h1,h2,h3{
+  color:var(--accent);
+  text-shadow:0 0 12px rgba(125,249,255,.6);
+}
+
+h1{
+  text-align:center;
+  font-size:clamp(2rem,5vw,3rem);
+}
+
+h2{
+  margin-top:0;
+}
+
+p{
+  margin:.8rem 0;
+}
+
+.meta{
+  font-size:.85rem;
+  opacity:.7;
+}
+
+.rule{
+  padding:.8rem 1rem;
+  border-left:3px solid var(--accent);
+  background:rgba(125,249,255,.05);
+  margin:1.2rem 0;
+}
+
+.warning{
+  color:var(--danger);
+  text-shadow:0 0 8px var(--danger);
+}
+
+ul{
+  padding-left:1.2rem;
+}
+
+li{
+  margin:.4rem 0;
+}
+
+footer{
+  text-align:center;
+  opacity:.4;
+  font-size:.75rem;
+  margin-top:4rem;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="stars"></canvas>
+
+<main>
+
+<section>
+  <h1>QUI-EST-CE&nbsp;?</h1>
+  <p class="meta">
+    Ce document n’est ni un jeu, ni une énigme classique.<br>
+    C’est une surface d’exposition contrôlée.
+  </p>
+</section>
+
+<section>
+  <h2>État public</h2>
+
+  <p>
+    Il existe une personne.
+  </p>
+  <p>
+    Cette personne vit en <strong>Belgique</strong>.
+  </p>
+  <p>
+    Son identité réelle est connue de <strong>neuf (9)</strong> individus.
+  </p>
+
+  <div class="rule">
+    Ces informations sont exactes.<br>
+    Elles sont insuffisantes.
+  </div>
+</section>
+
+<section>
+  <h2>Organisation connue</h2>
+
+  <p>
+    La personne fait partie d’une organisation composée d’environ
+    <strong>quarante-deux (42)</strong> membres.
+  </p>
+
+  <p>
+    Cette organisation existe, agit, et se maintient par un principe simple&nbsp;:
+  </p>
+
+  <div class="rule warning">
+    Aucun membre ne peut divulguer l’identité réelle de la personne,<br>
+    sous peine de conséquences qui ne seront pas décrites ici.
+  </div>
+
+  <p class="meta">
+    Le silence n’est pas une absence d’information.<br>
+    C’est une fonction.
+  </p>
+</section>
+
+<section>
+  <h2>Organisation derrière l’organisation</h2>
+
+  <p>
+    Au-dessus de la structure connue,
+    il existe une <strong>organisation non déclarée</strong>.
+  </p>
+
+  <p>
+    Elle n’apparaît dans aucun registre,
+    ne communique pas,
+    et n’a pas vocation à être identifiée.
+  </p>
+
+  <p>
+    Son rôle n’est pas de diriger l’organisation visible,
+    mais de garantir une chose&nbsp;:
+  </p>
+
+  <div class="rule">
+    L’identité de la personne derrière l’organisation<br>
+    derrière l’organisation<br>
+    ne doit <strong>JAMAIS</strong> être divulguée.
+  </div>
+</section>
+
+<section>
+  <h2>Le Veilleur</h2>
+
+  <p>
+    À l’intérieur de cette couche supérieure,
+    une seule personne joue un rôle central.
+  </p>
+
+  <p>
+    Cette personne est communément désignée comme
+    <strong>le Veilleur</strong>.
+  </p>
+
+  <ul>
+    <li>Il ou elle fait partie de l’organisation derrière l’organisation</li>
+    <li>Sa mission principale est la non-divulgation absolue</li>
+    <li>Son existence n’est pas connue des autres membres</li>
+  </ul>
+
+  <p class="meta">
+    Le Veilleur a été approché directement.<br>
+    En dehors de toute procédure.
+  </p>
+</section>
+
+<section>
+  <h2>Tentative d’infiltration</h2>
+
+  <p>
+    Il existe actuellement une tentative active.
+  </p>
+
+  <p>
+    Une personne cherche à infiltrer l’organisation
+    dans le but de prendre le contrôle
+    de l’organisation derrière l’organisation.
+  </p>
+
+  <p>
+    Cette tentative n’est ni confirmée, ni infirmée publiquement.
+  </p>
+
+  <div class="rule warning">
+    Si l’infiltration réussit,<br>
+    la structure visible restera inchangée.<br>
+    Seul le centre de gravité se déplacera.
+  </div>
+</section>
+
+<section>
+  <h2>Conclusion observable</h2>
+
+  <p>
+    Toutes les données fournies ici sont cohérentes.
+  </p>
+
+  <p>
+    Toutes les données fournies ici sont vraies.
+  </p>
+
+  <p>
+    Et pourtant,
+    aucune d’entre elles ne permet d’identifier qui que ce soit.
+  </p>
+
+  <div class="rule">
+    Ce n’est pas un manque d’informations.<br>
+    C’est une impossibilité structurelle.
+  </div>
+</section>
+
+<footer>
+  Document exposé volontairement.<br>
+  Toute tentative d’interprétation est laissée à la charge du lecteur.
+</footer>
+
+</main>
+
+<script>
+/* Fond stellaire discret */
+const c=document.getElementById("stars");
+const x=c.getContext("2d");
+function resize(){c.width=innerWidth;c.height=innerHeight}
+addEventListener("resize",resize);resize();
+const stars=[...Array(180)].map(()=>({
+  x:Math.random()*c.width,
+  y:Math.random()*c.height,
+  r:Math.random()*1.4+.2,
+  v:Math.random()*.25+.05
+}));
+function draw(){
+  x.clearRect(0,0,c.width,c.height);
+  x.fillStyle="#7df9ff";
+  stars.forEach(s=>{
+    s.y+=s.v;if(s.y>c.height)s.y=0;
+    x.beginPath();x.arc(s.x,s.y,s.r,0,Math.PI*2);x.fill();
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+
+</body>
+</html>
