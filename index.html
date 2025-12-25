@@ -190,6 +190,8 @@
             backdrop-filter: blur(10px);
             overflow-y: auto;
             box-shadow: 0 0 30px rgba(0, 255, 65, 0.2);
+            display: flex;
+            flex-direction: column;
         }
 
         .sidebar-title {
@@ -201,7 +203,22 @@
             padding-bottom: 0.5rem;
         }
 
-        .file-item {
+        .folder-path {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+            color: var(--terminal-green);
+            word-break: break-all;
+        }
+
+        .file-tree {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .file-item, .folder-item {
             padding: 0.6rem;
             margin-bottom: 0.4rem;
             border: 1px solid var(--lilac-dim);
@@ -215,7 +232,7 @@
             font-size: 0.85rem;
         }
 
-        .file-item:hover {
+        .file-item:hover, .folder-item:hover {
             border-color: var(--lilac);
             background: rgba(177, 156, 217, 0.2);
             transform: translateX(5px);
@@ -227,13 +244,18 @@
             box-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
         }
 
-        .file-icon {
-            font-size: 1rem;
+        .folder-item {
+            font-weight: bold;
+            background: rgba(177, 156, 217, 0.1);
         }
 
-        .file-name {
+        .file-icon, .folder-icon {
+            font-size: 1rem;
+            min-width: 1rem;
+        }
+
+        .file-name, .folder-name {
             flex: 1;
-            font-weight: bold;
             word-break: break-word;
         }
 
@@ -241,28 +263,12 @@
             color: var(--terminal-green-bright);
         }
 
-        .file-delete {
-            background: rgba(255, 100, 100, 0.2);
-            border: 1px solid #ff6464;
-            color: #ff6464;
-            padding: 0.2rem 0.4rem;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 0.7rem;
-            transition: all 0.3s ease;
-        }
-
-        .file-delete:hover {
-            background: rgba(255, 100, 100, 0.4);
-            transform: scale(1.1);
-        }
-
         .upload-area {
             border: 2px dashed var(--lilac);
             border-radius: 8px;
             padding: 1.5rem;
             text-align: center;
-            margin: 1rem 0;
+            margin-bottom: 1rem;
             cursor: pointer;
             transition: all 0.3s ease;
             background: rgba(177, 156, 217, 0.05);
@@ -521,6 +527,22 @@
             gap: 0.3rem;
         }
 
+        .error-message {
+            background: rgba(255, 100, 100, 0.1);
+            border: 2px solid #ff6464;
+            border-radius: 8px;
+            padding: 1rem;
+            color: #ff8888;
+            margin: 1rem;
+            text-align: center;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--lilac);
+        }
+
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -579,7 +601,7 @@
             <button class="toolbar-btn" onclick="newFile()" title="Nouveau fichier">
                 📄 Nouveau
             </button>
-            <button class="toolbar-btn" onclick="saveFile()" title="Sauvegarder">
+            <button class="toolbar-btn" onclick="saveToFolder()" title="Sauvegarder dans le dossier">
                 💾 Sauvegarder
             </button>
             <button class="toolbar-btn" onclick="exportMd()" title="Exporter .md">
@@ -587,6 +609,9 @@
             </button>
             <button class="toolbar-btn" onclick="exportHtml()" title="Exporter HTML">
                 🌐 Export HTML
+            </button>
+            <button class="toolbar-btn" onclick="refreshFolder()" title="Rafraîchir le dossier">
+                🔄 Refresh
             </button>
             
             <div class="toolbar-separator"></div>
@@ -603,12 +628,14 @@
             
             <div class="toolbar-separator"></div>
             
-            <input type="text" class="filename-input" id="filenameInput" placeholder="nom-du-fichier.md" value="document.md">
+            <input type="text" class="filename-input" id="filenameInput" placeholder="nom-du-fichier.md" value="">
         </div>
 
         <div class="workspace">
             <div class="sidebar">
                 <h3 class="sidebar-title">⟩ Fichiers</h3>
+                
+                <div class="folder-path">📁 ./markdown/</div>
                 
                 <label for="fileInput" class="upload-area" id="uploadArea">
                     <div class="upload-icon">⬆</div>
@@ -616,7 +643,9 @@
                 </label>
                 <input type="file" id="fileInput" accept=".md,.markdown" multiple>
                 
-                <div id="fileList"></div>
+                <div class="file-tree" id="fileTree">
+                    <div class="loading">🔄 Chargement des fichiers...</div>
+                </div>
             </div>
 
             <div class="editor-container" id="editorContainer">
@@ -632,7 +661,7 @@
                             <button class="panel-tool-btn" onclick="insertText('- ')" title="Liste">•</button>
                         </div>
                     </div>
-                    <textarea class="editor-textarea" id="editor" placeholder="Commencez à écrire votre Markdown ici..."></textarea>
+                    <textarea class="editor-textarea" id="editor" placeholder="Sélectionnez un fichier ou créez-en un nouveau..."></textarea>
                     <div class="stats-bar">
                         <div class="stat-item">📝 <span id="charCount">0</span> caractères</div>
                         <div class="stat-item">📊 <span id="wordCount">0</span> mots</div>
@@ -653,8 +682,9 @@
     <div id="toast" class="toast"></div>
 
     <script>
+        const MARKDOWN_FOLDER = './markdown/';
         let files = [];
-        let currentFileIndex = -1;
+        let currentFile = null;
         let currentView = 'split';
 
         mermaid.initialize({ 
@@ -689,18 +719,97 @@
         const preview = document.getElementById('preview');
         const fileInput = document.getElementById('fileInput');
         const uploadArea = document.getElementById('uploadArea');
-        const fileList = document.getElementById('fileList');
+        const fileTree = document.getElementById('fileTree');
         const filenameInput = document.getElementById('filenameInput');
         const editorContainer = document.getElementById('editorContainer');
+
+        // Liste des fichiers à charger
+        const markdownFiles = [
+            'readme.md',
+            'guide.md',
+            'documentation.md',
+            'notes.md',
+            'warning.md',
+            'avertissement.md'
+        ];
+
+        // Charger les fichiers au démarrage
+        async function loadFolder() {
+            fileTree.innerHTML = '<div class="loading">🔄 Chargement des fichiers...</div>';
+            
+            const loadedFiles = [];
+            
+            for (const filename of markdownFiles) {
+                try {
+                    const response = await fetch(MARKDOWN_FOLDER + filename);
+                    if (response.ok) {
+                        const content = await response.text();
+                        loadedFiles.push({
+                            name: filename,
+                            content: content,
+                            path: MARKDOWN_FOLDER + filename,
+                            fromFolder: true
+                        });
+                    }
+                } catch (error) {
+                    console.log(`Fichier ${filename} non trouvé`);
+                }
+            }
+            
+            files = loadedFiles;
+            
+            if (files.length === 0) {
+                fileTree.innerHTML = `
+                    <div class="error-message">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">📂</div>
+                        <div>Aucun fichier trouvé</div>
+                        <div style="font-size: 0.8rem; margin-top: 0.5rem; opacity: 0.8;">
+                            Créez un dossier "markdown" avec des fichiers .md
+                        </div>
+                    </div>
+                `;
+            } else {
+                updateFileTree();
+                openFile(0);
+                showToast(`✅ ${files.length} fichier(s) chargé(s)`);
+            }
+        }
+
+        function updateFileTree() {
+            if (files.length === 0) {
+                fileTree.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--lilac-dim); font-size: 0.8rem;">Aucun fichier</div>';
+                return;
+            }
+
+            fileTree.innerHTML = files.map((file, index) => `
+                <div class="file-item ${currentFile && currentFile.name === file.name ? 'active' : ''}" onclick="openFile(${index})">
+                    <span class="file-icon">${file.fromFolder ? '📄' : '📝'}</span>
+                    <div class="file-name">${file.name}</div>
+                </div>
+            `).join('');
+        }
+
+        function openFile(index) {
+            currentFile = files[index];
+            editor.value = currentFile.content;
+            filenameInput.value = currentFile.name;
+            updatePreview();
+            updateStats();
+            updateFileTree();
+        }
+
+        function refreshFolder() {
+            showToast('🔄 Rechargement...');
+            loadFolder();
+        }
 
         // Live preview
         editor.addEventListener('input', () => {
             updatePreview();
             updateStats();
-            if (currentFileIndex !== -1) {
-                files[currentFileIndex].content = editor.value;
-                files[currentFileIndex].modified = true;
-                updateFileList();
+            if (currentFile) {
+                currentFile.content = editor.value;
+                currentFile.modified = true;
             }
         });
 
@@ -756,129 +865,81 @@
         function handleFiles(fileArray) {
             fileArray.forEach(file => {
                 if (file.name.endsWith('.md') || file.name.endsWith('.markdown')) {
-                    loadFile(file);
+                    loadUploadedFile(file);
                 } else {
                     showToast(`❌ "${file.name}" n'est pas un fichier Markdown`);
                 }
             });
         }
 
-        function loadFile(file) {
+        function loadUploadedFile(file) {
             const reader = new FileReader();
             reader.onload = (e) => {
                 const fileData = {
                     name: file.name,
                     content: e.target.result,
-                    modified: false,
-                    date: new Date()
+                    fromFolder: false,
+                    modified: false
                 };
                 
                 const existingIndex = files.findIndex(f => f.name === file.name);
                 if (existingIndex !== -1) {
                     files[existingIndex] = fileData;
-                    showToast(`📝 "${file.name}" rechargé`);
+                    showToast(`📝 "${file.name}" mis à jour`);
                 } else {
                     files.push(fileData);
                     showToast(`✅ "${file.name}" chargé`);
                 }
                 
-                updateFileList();
+                updateFileTree();
                 openFile(existingIndex !== -1 ? existingIndex : files.length - 1);
             };
             reader.readAsText(file);
         }
 
-        function updateFileList() {
-            if (files.length === 0) {
-                fileList.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--lilac-dim); font-size: 0.8rem;">Aucun fichier</div>';
-                return;
-            }
-
-            fileList.innerHTML = files.map((file, index) => `
-                <div class="file-item ${index === currentFileIndex ? 'active' : ''}" onclick="openFile(${index})">
-                    <span class="file-icon">${file.modified ? '●' : '📄'}</span>
-                    <div class="file-name">${file.name}</div>
-                    <button class="file-delete" onclick="deleteFile(event, ${index})" title="Supprimer">🗑️</button>
-                </div>
-            `).join('');
-        }
-
-        function openFile(index) {
-            currentFileIndex = index;
-            const file = files[index];
-            editor.value = file.content;
-            filenameInput.value = file.name;
-            updatePreview();
-            updateStats();
-            updateFileList();
-        }
-
-        function deleteFile(event, index) {
-            event.stopPropagation();
-            const fileName = files[index].name;
-            files.splice(index, 1);
-            
-            if (currentFileIndex === index) {
-                if (files.length > 0) {
-                    openFile(Math.min(index, files.length - 1));
-                } else {
-                    currentFileIndex = -1;
-                    editor.value = '';
-                    filenameInput.value = 'document.md';
-                    updatePreview();
-                    updateStats();
-                }
-            } else if (currentFileIndex > index) {
-                currentFileIndex--;
-            }
-            
-            updateFileList();
-            showToast(`🗑️ "${fileName}" supprimé`);
-        }
-
         function newFile() {
-            const fileName = `nouveau-${files.length + 1}.md`;
+            const fileName = `nouveau-${Date.now()}.md`;
             files.push({
                 name: fileName,
-                content: '',
-                modified: false,
-                date: new Date()
+                content: '# Nouveau document\n\nCommencez à écrire ici...',
+                fromFolder: false,
+                modified: true
             });
-            updateFileList();
+            updateFileTree();
             openFile(files.length - 1);
             showToast('📄 Nouveau fichier créé');
         }
 
-        function saveFile() {
-            if (currentFileIndex === -1 && editor.value.trim() === '') {
-                showToast('❌ Aucun contenu à sauvegarder');
+        function saveToFolder() {
+            if (!currentFile) {
+                showToast('❌ Aucun fichier à sauvegarder');
                 return;
             }
 
             const content = editor.value;
-            const filename = filenameInput.value || 'document.md';
+            const filename = filenameInput.value || currentFile.name;
             
-            if (currentFileIndex === -1) {
-                files.push({
-                    name: filename,
-                    content: content,
-                    modified: false,
-                    date: new Date()
-                });
-                currentFileIndex = files.length - 1;
-            } else {
-                files[currentFileIndex].content = content;
-                files[currentFileIndex].name = filename;
-                files[currentFileIndex].modified = false;
-            }
+            // Mise à jour du fichier en mémoire
+            currentFile.content = content;
+            currentFile.name = filename;
+            currentFile.modified = false;
             
-            updateFileList();
-            showToast('💾 Fichier sauvegardé en mémoire');
+            // Export automatique
+            const blob = new Blob([content], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            updateFileTree();
+            showToast(`💾 "${filename}" sauvegardé`);
         }
 
         function exportMd() {
             const content = editor.value;
-            const filename = filenameInput.value || 'document.md';
+            const filename = filenameInput.value || currentFile?.name || 'document.md';
             
             if (!content.trim()) {
                 showToast('❌ Aucun contenu à exporter');
@@ -898,7 +959,7 @@
 
         function exportHtml() {
             const content = editor.value;
-            const filename = filenameInput.value.replace('.md', '.html') || 'document.html';
+            const filename = (filenameInput.value || currentFile?.name || 'document.md').replace('.md', '.html');
             
             if (!content.trim()) {
                 showToast('❌ Aucun contenu à exporter');
@@ -1064,10 +1125,9 @@ ${preview.innerHTML}
             updatePreview();
             updateStats();
             
-            if (currentFileIndex !== -1) {
-                files[currentFileIndex].content = editor.value;
-                files[currentFileIndex].modified = true;
-                updateFileList();
+            if (currentFile) {
+                currentFile.content = editor.value;
+                currentFile.modified = true;
             }
         }
 
@@ -1086,7 +1146,7 @@ ${preview.innerHTML}
             // Ctrl+S / Cmd+S pour sauvegarder
             if ((e.ctrlKey || e.metaKey) && e.key === 's') {
                 e.preventDefault();
-                saveFile();
+                saveToFolder();
             }
             
             // Ctrl+N / Cmd+N pour nouveau fichier
@@ -1099,6 +1159,12 @@ ${preview.innerHTML}
             if ((e.ctrlKey || e.metaKey) && e.key === 'e') {
                 e.preventDefault();
                 exportMd();
+            }
+            
+            // Ctrl+R / Cmd+R pour refresh
+            if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+                e.preventDefault();
+                refreshFolder();
             }
             
             // Ctrl+1/2/3 pour changer de vue
@@ -1134,20 +1200,6 @@ ${preview.innerHTML}
             }
         });
 
-        // Auto-save toutes les 30 secondes
-        setInterval(() => {
-            if (currentFileIndex !== -1 && files[currentFileIndex].modified) {
-                files[currentFileIndex].content = editor.value;
-                files[currentFileIndex].modified = true;
-                showToast('💾 Auto-sauvegarde');
-            }
-        }, 30000);
-
-        // Initialisation
-        updateFileList();
-        updatePreview();
-        updateStats();
-
         // Avertir avant de quitter si modifications non sauvegardées
         window.addEventListener('beforeunload', (e) => {
             const hasUnsaved = files.some(f => f.modified);
@@ -1156,6 +1208,11 @@ ${preview.innerHTML}
                 e.returnValue = '';
             }
         });
+
+        // Initialisation
+        updatePreview();
+        updateStats();
+        loadFolder();
     </script>
 </body>
 </html>
