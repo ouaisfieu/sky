@@ -124,6 +124,19 @@ footer {
 .silence-low {
   color: var(--ok);
 }
+.meta-danger {
+  color: var(--danger);
+  text-shadow: 0 0 12px var(--danger);
+}
+
+.meta-ok {
+  color: var(--ok);
+}
+
+.meta-veil {
+  opacity: 0.4;
+  filter: blur(1px);
+}
 
 </style>
 </head>
@@ -317,6 +330,92 @@ document.getElementById("guess").onclick = () => {
   updateSilence();
   originalGuess();
 };
+
+  /* ====== PHASE MÉTA ====== */
+
+let secretIntegrity = 100;
+let infiltration = 0;
+let watcherAlert = false;
+
+// références UI
+const watcherEl = document.getElementById("watcherStatus");
+const infiltrationEl = document.getElementById("infiltrationLevel");
+const integrityEl = document.getElementById("secretIntegrity");
+const metaSystem = document.getElementById("metaSystem");
+
+// logique interne invisible
+function metaTick() {
+  // l'infiltrateur progresse lentement mais sûrement
+  infiltration += Math.random() * 2;
+
+  // le veilleur agit uniquement si le secret est menacé
+  if (secretIntegrity < 70) {
+    watcherAlert = true;
+    infiltration *= 0.85; // contre-mesure
+    secretIntegrity += 1.5;
+  }
+
+  // chaque tentative publique fragilise le secret
+  secretIntegrity -= Math.random() * 1.2;
+
+  // bornes
+  infiltration = Math.min(infiltration, 100);
+  secretIntegrity = Math.max(Math.min(secretIntegrity, 100), 0);
+
+  updateMetaUI();
+}
+
+function updateMetaUI() {
+  // infiltration
+  let infilLabel = "indétectable";
+  if (infiltration > 30) infilLabel = "latente";
+  if (infiltration > 60) infilLabel = "active";
+  if (infiltration > 85) infilLabel = "critique";
+
+  infiltrationEl.textContent = infilLabel;
+
+  // veilleur
+  watcherEl.textContent = watcherAlert ? "en vigilance absolue" : "actif";
+
+  // intégrité
+  integrityEl.textContent = Math.round(secretIntegrity) + "%";
+
+  // états visuels
+  integrityEl.className = secretIntegrity < 40 ? "meta-danger" : "meta-ok";
+
+  // si trop proche de la vérité → voile
+  if (secretIntegrity < 25) {
+    metaSystem.classList.add("meta-veil");
+  } else {
+    metaSystem.classList.remove("meta-veil");
+  }
+
+  // règle d'or : si l'infiltrateur gagne trop
+  if (infiltration > 90 && secretIntegrity < 30) {
+    lockReality();
+  }
+}
+
+// verrouillage narratif
+function lockReality() {
+  document.getElementById("verdict").innerHTML =
+    "<strong>⚠️ INCIDENT MÉTA</strong><br>" +
+    "Une intervention hors-système a neutralisé cette tentative.";
+
+  // désactivation douce
+  document.getElementById("guess").disabled = true;
+  document.getElementById("guess").textContent = "ACCÈS RÉVOQUÉ";
+}
+
+// injection dans le bouton existant
+const previousGuess = document.getElementById("guess").onclick;
+document.getElementById("guess").onclick = () => {
+  metaTick();
+  previousGuess();
+};
+
+// tick passif (le système vit sans le joueur)
+setInterval(metaTick, 12000);
 
 
 /* =======================
