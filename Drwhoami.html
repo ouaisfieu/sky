@@ -115,6 +115,16 @@ footer {
   padding: 2rem 1rem;
   font-size: 0.75rem;
 }
+
+  .silence-high {
+  color: var(--danger);
+  text-shadow: 0 0 10px var(--danger);
+}
+
+.silence-low {
+  color: var(--ok);
+}
+
 </style>
 </head>
 
@@ -157,6 +167,18 @@ footer {
     </div>
 
   </section>
+
+  <div class="card">
+  <h2>🜏 Organisation silencieuse</h2>
+  <div class="stat" id="orgCount">42</div>
+  <div class="label">
+    personnes liées par une contrainte de non-divulgation
+  </div>
+  <div id="silenceLevel" class="label" style="margin-top:0.5rem;">
+    niveau de silence : stable
+  </div>
+</div>
+
 
   <section class="card">
     <h2>🧩 Tentative d’identification</h2>
@@ -234,6 +256,41 @@ document.getElementById("guess").onclick = () => {
   document.getElementById("verdict").innerHTML =
     `<strong>Tentative #${attempts}</strong><br>${msg}`;
 };
+
+  let silence = 0;
+
+const silenceMessages = [
+  "stable",
+  "surveillé",
+  "sous contrainte",
+  "verrouillé",
+  "total"
+];
+
+function updateSilence() {
+  const level = Math.min(silence, silenceMessages.length - 1);
+  const el = document.getElementById("silenceLevel");
+
+  el.textContent = "niveau de silence : " + silenceMessages[level];
+
+  if (level >= 3) {
+    el.classList.add("silence-high");
+    el.classList.remove("silence-low");
+  } else {
+    el.classList.add("silence-low");
+    el.classList.remove("silence-high");
+  }
+}
+
+// injection dans la tentative existante
+const originalGuess = document.getElementById("guess").onclick;
+
+document.getElementById("guess").onclick = () => {
+  silence++;
+  updateSilence();
+  originalGuess();
+};
+
 
 /* =======================
    FOND COSMIQUE ANIMÉ
