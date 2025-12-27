@@ -99,7 +99,7 @@ Si cette démarche vous parle, même partiellement, vous pouvez :
 Aucun CV “parfait” n’est requis à ce stade.
 Un message clair, honnête et personnel vaut souvent mieux qu’un dossier formaté.
 
-📩 **Contact :** [contact@ccplc.eu](mailto:contact@ccplc.eu)
+📩 **Contact :** [mystèèère@ccplc.eu](https://dl.ouaisfi.eu/usba/1/2/3/9/9/9/)
 
 ---
 
